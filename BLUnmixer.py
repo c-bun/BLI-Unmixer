@@ -60,8 +60,13 @@ class BLUnmixer:
         K = self.find_K(normd)
         K_inv = pinv(K)
         print(K_inv)
-        dot = np.dot(K_inv, self.np_imstack.reshape(2,256*256)).reshape(2,256,256)
+        #dot = np.dot(K_inv, self.np_imstack.reshape(2,256*256)).reshape(2,256,256)
+        dot = np.dot(K_inv, normd.reshape(2,256*256)).reshape(2,256,256)
         self.fitted = dot
+        self.fitted = self.norm(dot)
+        # this implementation is what matches the reproduce_gammon images best.
+        # I'm not sure why you have to normalize multiple times. Should think
+        # about this more.
         
     def plot_fit(self):
         fig, axs = plt.subplots(nrows=1, ncols=self.fitted.shape[0])
@@ -89,9 +94,6 @@ class ROISelector:
         self.doneButton = Button(axDone, 'Done')
         self.doneButton.on_clicked(self.done)
         
-#         axSelector = plt.axes([0.71, 0.05, 0.1, 0.075])
-#         self.seleButton = Button(axSelector, 'Select')
-#         self.seleButton.on_clicked(self.wid)
         ax.imshow(self.image)
         plt.connect('key_press_event', self.widget)
         plt.show()
